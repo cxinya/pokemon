@@ -1,0 +1,53 @@
+national_number,english_name,evochain_0,evochain_2,evochain_4,evochain_6
+789,Cosmog,Cosmog,Cosmoem,Solgaleo,Lunala
+790,Cosmoem,Cosmog,Cosmoem,Solgaleo,Lunala
+791,Solgaleo,Cosmog,Cosmoem,Solgaleo,Lunala
+792,Lunala,Cosmog,Cosmoem,Solgaleo,Lunala
+134,Vaporeon,Eevee,,,
+135,Jolteon,Eevee,,,
+136,Flareon,Eevee,,,
+196,Espeon,Eevee,,,
+197,Umbreon,Eevee,,,
+470,Leafeon,Eevee,,,
+471,Glaceon,Eevee,,,
+700,Sylveon,Eevee,,,
+29,Nidoran♀,Egg,Nidoran♀,Nidorina,Nidoqueen
+30,Nidorina,Egg,Nidoran♀,Nidorina,Nidoqueen
+31,Nidoqueen,Egg,Nidoran♀,Nidorina,Nidoqueen
+32,Nidoran♂,Egg,Nidoran♂,Nidorino,Nidoking
+33,Nidorino,Egg,Nidoran♂,Nidorino,Nidoking
+34,Nidoking,Egg,Nidoran♂,Nidorino,Nidoking
+313,Volbeat,Egg,Volbeat,,
+314,Illumise,Egg,Illumise,,
+52,Meowth,Meowth,Persian,,
+439,Mime Jr.,Mime Jr.,Mr. Mime,,
+866,Mr. Rime,Mime Jr.,Mr. Mime,Mr. Rime,
+122,Mr. Mime,Mimejr.,Mr.mime,,
+43,Oddish,Oddish,Gloom,Vileplume,Bellossom
+44,Gloom,Oddish,Gloom,Vileplume,Bellossom
+45,Vileplume,Oddish,Gloom,Vileplume,
+182,Bellossom,Oddish,Gloom,Bellossom,
+60,Poliwag,Poliwag,Poliwhirl,Poliwrath,Politoed
+61,Poliwhirl,Poliwag,Poliwhirl,Poliwrath,Politoed
+62,Poliwrath,Poliwag,Poliwhirl,Poliwrath,
+186,Politoed,Poliwag,Poliwhirl,Politoed,
+280,Ralts,Ralts,Kirlia,Gardevoir,Gallade
+281,Kirlia,Ralts,Kirlia,Gardevoir,Gallade
+282,Gardevoir,Ralts,Kirlia,Gardevoir,
+475,Gallade,Ralts,Kirlia,Gallade,
+79,Slowpoke,Slowpoke,Slowbro,Slowking,Use Galarica Cuff
+80,Slowbro,Slowpoke,Slowbro,Slowking,Use Galarica Cuff
+199,Slowking,Slowpoke,Slowbro,Slowking,
+220,Swinub,Swinub,Piloswine,Mamoswine,
+221,Piloswine,Swinub,Piloswine,Mamoswine,
+787,Tapu Bulu,Tapu Bulu,,,
+788,Tapu Fini,Tapu Fini,,,
+785,Tapu Koko,Tapu Koko,,,
+786,Tapu Lele,Tapu Lele,,,
+772,Type: Null,Type: Null,Silvally,,
+106,Hitmonlee,Tyrogue,Hitmonlee,,
+107,Hitmonchan,Tyrogue,Hitmonchan,,
+236,Tyrogue,Tyrogue,Hitmonchan,Hitmonlee,Hitmontop
+237,Hitmontop,Tyrogue,Hitmontop,,
+263,Zigzagoon,Zigzagoon,Linoone,,
+264,Linoone,Zigzagoon,Linoone,,
