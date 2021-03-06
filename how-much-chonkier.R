@@ -1,76 +1,86 @@
 library(tidyverse)
-library(patchwork)
-library(showtext)
-
-font_add_google("Montserrat", "mont")
-font_add_google("Zilla Slab", "zilla")
-showtext_auto()
 
 
 df <- read_csv("data/pokemon.csv") %>% 
-  filter(!is.na(evochain_2)) %>%   # Only keep pokemon that evolve
   select(
     national_number, english_name, starts_with("evo"),
     contains("type"), height_m, weight_kg)
 
 
+# ID problematic multiple evo stems ------------------------------------------------------
 
+evo_chains <- c("evochain_0", "evochain_2", "evochain_4", "evochain_6")
 
-# Create long evolution chains --------------------------------------------------------
+# Eevee family is weird
+eevee_evos <- df %>% filter(evochain_0 == "Eevee" & english_name != "Eevee") %>% 
+  select("english_name") %>% unlist()
 
-stages <- c("evo_stage_0", "evo_stage_1", "evo_stage_2", "evo_stage_3")
-stages <- c("evochain_0", "evochain_2", "evochain_4", "evochain_6")
-
-evos <- df %>% select(stages) %>% 
+# Pkmn with multiple diff evo options
+multi_evo <-  df %>% select(all_of(evo_chains)) %>% 
   distinct() %>% 
-  mutate(basic_pokemon = evochain_0) %>% 
+  mutate(basic_pkmn = evochain_0) %>% 
   pivot_longer(
-    cols = all_of(stages),
-    names_to = "evo_stage",
+    cols = all_of(evo_chains),
+    names_to = "evo_chain",
     values_to = "english_name",
     ) %>% 
-  drop_na(english_name)
+  drop_na(english_name) %>% 
+  count(english_name) %>% 
+  filter(n > 1) %>% 
+  select(english_name) %>% unlist()
 
+problem_evos <- df %>% filter(
+    english_name %in% multi_evo |  # Same basic pkmn w multiple evo options
+    evochain_0 == "Egg" |          # Eggs are not a basic pokemon!
+    !is.na(evochain_6) |           # No pkmn evolves 3 times
+    english_name %in% eevee_evos | # Eevee has weird evos
+    grepl(" ", english_name)       # Look for weird names, possible typo
+    ) %>%
+  select(national_number, english_name, all_of(evo_chains)) %>% 
+  arrange(evochain_0, national_number)
 
-# ID Problem evolutions - e.g., multiple evo stems ------------------------------------------------------
-
-multi_evo <- evos %>% count(english_name) %>% 
-  filter(n > 1) %>% select(english_name) %>% unlist()
-
-df %>% filter(english_name %in% multi_evo) %>% View()
+problem_evos %>% write_csv("data/problem-evolutions.csv", na = "")
 
 
 # Fix problem evolutions --------------------------------------------------
 
-eevee_evos <- df %>% filter(evochain_0 == "Eevee" & english_name != "Eevee") %>% 
-  select("english_name") %>% unlist()
-hitmon_evos <- df %>% filter(grepl("Hitmon", english_name)) %>% 
-  select("english_name") %>% unlist()
+# Manually Google correct evos and fix in CSV, keep rows from final form pkmn only
 
-
-clean_evos <- df %>% mutate(
-    evo_stage_0 = case_when(
-      evochain_0 == "Egg" ~ evochain_2,
-      english_name %in% hitmon_evos ~ "Tyrogue",  # Fix Tyrogue evolutions
+clean_evos <- df %>% select(national_number, english_name, all_of(evo_chains)) %>% 
+  filter(!english_name %in% problem_evos$english_name) %>%
+  rbind(read_csv("data/problem-evolutions-fixed.csv")) %>% 
+  filter(!is.na(evochain_2)) %>%      # Keep only pkmn that evolve
+  select(all_of(evo_chains)) %>% 
+  distinct() %>% 
+  mutate(
+    evochain_0 = case_when(
+      evochain_0 == "Nidoran?" & evochain_4 == "Nidoqueen" ~ "Nidoran\u2640",
+      evochain_0 == "Nidoran?" & evochain_4 == "Nidoking" ~ "Nidoran\u2642",
       TRUE ~ evochain_0),
-    evo_stage_1 = case_when(
-      evochain_0 == "Egg" ~ evochain_4,
-      english_name %in% eevee_evos ~ english_name,  # Fix Eevee evolutions
-      english_name %in% hitmon_evos ~ english_name,  # Fix Tyrogue evolutions
-      english_name == "Tyrogue" ~ NA_character_,  # Fix Tyrogue evolutions
-      TRUE ~ evochain_2),
-    evo_stage_2 = case_when(
-      evochain_0 == "Egg" ~ evochain_6,
-      english_name %in% hitmon_evos ~ NA_character_,  # Fix Tyrogue evolutions
-      english_name == "Tyrogue" ~ NA_character_ , # Fix Tyrogue evolutions
-      TRUE ~ evochain_4),
-    evo_stage_3 = case_when(
-      evochain_0 == "Egg" ~ NA_character_,
-      english_name %in% hitmon_evos ~ NA_character_,  # Fix Tyrogue evolutions
-      english_name == "Tyrogue" ~ NA_character_ , # Fix Tyrogue evolutions
-      grepl("Cuff", evochain_6) ~ NA_character_,  # Remove Slowpoke "Galarian Cuff" error
-      TRUE ~ evochain_6)) %>% 
-  filter(!is.na(evo_stage_1)) %>%   # Only keep pokemon that evolve
-  select(
-    national_number, english_name, starts_with("evo_stage"),
-    contains("type"), height_m, weight_kg)
+    basic_pkmn = evochain_0) %>%
+  group_by(basic_pkmn) %>% 
+  mutate(evo = row_number()) %>% 
+  filter(!(basic_pkmn == "Swinub" & is.na(evochain_4))) %>%    # Mamoswine doubled in orig data
+  pivot_longer(
+    cols = all_of(evo_chains),
+    names_to = "evo_stage",
+    values_to = "english_name",
+    ) %>% 
+  drop_na(english_name) %>% 
+  mutate(evo_stage = recode(evo_stage, 
+    "evochain_0" = 0,
+    "evochain_2" = 1,
+    "evochain_4" = 2)) %>% 
+  group_by(basic_pkmn, evo) %>% 
+  mutate(max_stages = max(evo_stage)) %>% 
+  left_join(select(df, english_name, national_number, weight_kg, primary_type)) %>% 
+  left_join(select(df, english_name, basic_pkmn_num = national_number), by = c("basic_pkmn" = "english_name"))
+
+
+# Calc % weight change ----------------------------------------------------
+
+evo_weight <- clean_evos %>% 
+  group_by(basic_pkmn, evo) %>% 
+  mutate(per_change = weight_kg / lag(weight_kg, default = first(weight_kg)) - 1)
+
+evo_weight %>% saveRDS("data/evolved-weights.Rds")
