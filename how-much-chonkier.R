@@ -1,5 +1,6 @@
 library(tidyverse)
 
+# Data from https://www.kaggle.com/cristobalmitchell/pokedex
 
 df <- read_csv("data/pokemon.csv") %>% 
   select(
@@ -81,6 +82,7 @@ clean_evos <- df %>% select(national_number, english_name, all_of(evo_chains)) %
 
 evo_weight <- clean_evos %>% 
   group_by(basic_pkmn, evo) %>% 
-  mutate(per_change = weight_kg / lag(weight_kg, default = first(weight_kg)) - 1)
+  mutate(per_change = weight_kg / lag(weight_kg, default = first(weight_kg)) - 1) %>% 
+  ungroup()
 
 evo_weight %>% saveRDS("data/evolved-weights.Rds")
