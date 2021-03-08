@@ -27,11 +27,11 @@ chonkiest <- chonk %>% group_by(max_stages) %>%
 chonkiest_fam <- chonk %>% filter(basic_pkmn %in% chonkiest$basic_pkmn)  %>% 
   select(-english_name) %>% 
   left_join(select(chonkiest, basic_pkmn, english_name, img)) %>% 
-  mutate(display_label = case_when(
+  mutate(show = case_when(
     evo_stage == 2 & max_stages == 2 ~ 1,
     evo_stage == 1 & max_stages == 1 ~ 1,
     TRUE ~ 0)) %>% 
-  mutate(img = ifelse(display_label == 1, img, NA))
+  mutate(img = ifelse(show == 1, img, NA))
 
 
 # Chonkiest pkmn colors from sprites -----------------------------------------------------------------
@@ -72,7 +72,7 @@ heaviest_pkmn_2evo <- chonk %>% filter(max_stages == 2) %>%
     size = .7) + 
   ggrepel::geom_text_repel(data = filter(chonkiest_fam, max_stages == 2),
     aes(x = evo_stage, y = weight_kg, color = english_name, 
-        label = ifelse(display_label == 1, english_name, "")),
+        label = ifelse(show == 1, english_name, "")),
     hjust = 0, size = 11, show.legend = F, family = "2p", xlim = c(2.03, 2.35)) +
   geom_text(data = cosmoem,                                     # Cosmoem
     aes(label = english_name, x = 1.05, y = weight_kg),
@@ -125,8 +125,8 @@ heaviest_pkmn_1evo <- chonk %>% filter(max_stages == 1) %>%
     aes(x = evo_stage, y = weight_kg,
         color = english_name,
         label = case_when(
-          english_name == "Copperajah" & display_label == 1 ~ "Copper-\najah",
-          display_label == 1 ~ english_name,
+          english_name == "Copperajah" & show == 1 ~ "Copper-\najah",
+          show == 1 ~ english_name,
           TRUE ~ "")),
     hjust = 0, size = 11, family = "2p", xlim = c(1.03, 1.3), lineheight = .3) +
   ggimage::geom_image(data = filter(chonkiest_fam, max_stages == 1),

@@ -62,7 +62,7 @@ heaviest_type_2evo <- chonk %>% filter(max_stages == 2) %>%
   ggrepel::geom_text_repel(data = filter(chonk_type, max_stages == 2),
     aes(x = evo_stage, y = avg_weight_kg,
         color = primary_type, label = ifelse(show == 1, primary_type, "")),
-    hjust = 0, size = 11, show.legend = F, family = "2p", xlim = c(2.03, 2.3)) +
+    hjust = 0, size = 11, show.legend = F, family = "2p", xlim = c(2.03, 2.35)) +
   labs(color = "Type", title = "TWO EVOLUTIONS") +
   scale_y_continuous(
     limits = c(0, 1010),
@@ -70,7 +70,7 @@ heaviest_type_2evo <- chonk %>% filter(max_stages == 2) %>%
     labels = format(seq(0, 1000, 250), big.mark = ","),
     expand = c(0,0)) +
   scale_x_continuous(
-    limits = c(0, 2.3),
+    limits = c(0, 2.35),
     breaks = c(0, 1, 2),
     labels = c("Basic\nPok\u00E9mon", "Evolution 1", "Evolution 2\n(final form)")
   ) +
